@@ -1,0 +1,4 @@
+[submodule "spru_package/ckks_in_sagemath"]
+	path = spru_package/ckks_in_sagemath
+	url = https://github.com/se-tim/CKKS-in-SageMath.git
+	branch = main
