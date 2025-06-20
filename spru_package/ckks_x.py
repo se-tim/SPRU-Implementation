@@ -50,7 +50,7 @@ class CKKS_x(CKKS):
         if h is not None and h & (h - 1) != 0:
             raise ValueError("h must be a power of two.")
         if h is None:
-            h = 2 ** min(6, 2 ** (log(cls.N, 2) // 2))
+            h = 2 ** min(6, int(log(cls.N, 2) // 2))
 
         # Generate the SPRU secret key
 
@@ -101,7 +101,7 @@ class CKKS_x(CKKS):
                 Number of coefficients to bootstrap. Must be a power of two and
                 at least 2.
             g (int):
-                Grouping parameter for SlotToCoeff.
+                Grouping parameter (logarithm of radix) for SlotToCoeff.
             print_messages (bool, optional):
                 Whether to print information messages. Defaults to False.
         """
@@ -124,17 +124,17 @@ class CKKS_x(CKKS):
         log_C_half = log(C // 2, 2)
         sk_coeffs = cls.sk.coeffs
         for u in range(2 * cls.C):
-            s_tilde = np.zeros(cls.N // 2, dtype=np.complex128)
+            sk_tilde = np.zeros(cls.N // 2, dtype=np.complex128)
             for k in range(B // (2 * cls.C)):
                 for b in range(cls.h):
                     for a in range(cls.C):
-                        s_tilde[k * cls.h * cls.C + b * cls.C + a] = int(
+                        sk_tilde[k * cls.h * cls.C + b * cls.C + a] = int(
                             sk_coeffs[b * B + u * B // (2 * cls.C) + k]
                         )
-            s_tilde = ext_bit_rev_vector(s_tilde, cls.C // 2, log_C_half)
+            sk_tilde = ext_bit_rev_vector(sk_tilde, cls.C // 2, log_C_half)
             cs_list.append(
                 cls.enc_poly_with_sk(
-                    cls.encode(s_tilde, is_boot=True), sk, is_boot=True
+                    cls.encode(sk_tilde, is_boot=True), sk, is_boot=True
                 )
             )
         cls.cs_list = cs_list
@@ -179,6 +179,15 @@ class CKKS_x(CKKS):
             print("The SPRU bootstrapping configuration is done!")
 
     def SPRU(self):
+        """
+        Apply the SPRU bootstrapping procedure. The ciphertext self is
+        refreshed by increasing its level. Only the coefficients indexed by
+        multiples of N / C are bootstrapped.
+
+        Returns:
+            CKKS:
+                A new ciphertext with increased level.
+        """
         # Coefficient encodings
 
         B = self.N // self.h
@@ -204,8 +213,7 @@ class CKKS_x(CKKS):
                         e[k * self.h * self.C + b * self.C + a] = int(e_coeff)
             e = np.exp(e * inner_factor) * outer_factor
             e = ext_bit_rev_vector(e, self.C // 2)
-            E = self.encode(e, is_boot=True)
-            E_list.append(E)
+            E_list.append(self.encode(e, is_boot=True))
 
         # Homomorphic operations until SlotToCoeff
 

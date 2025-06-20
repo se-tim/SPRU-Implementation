@@ -15,8 +15,8 @@ def ext_bit_rev(i, B, log_B=None):
             The integer to reverse.
         B (int):
             The power of two with respect to which the extended bit-reversing
-            is computed.$
-        log_B (ing, optional):
+            is computed.
+        log_B (int, optional):
             The logarithm of B to the base 2.
 
     Returns:
