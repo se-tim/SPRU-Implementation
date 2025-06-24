@@ -121,7 +121,7 @@ class CKKS_x(CKKS):
         cs_list = []
         cls.C = C
         B = cls.N // cls.h
-        log_C_half = log(C // 2, 2)
+        log_C_half = log(cls.C // 2, 2)
         sk_coeffs = cls.sk.coeffs
         for u in range(2 * cls.C):
             sk_tilde = np.zeros(cls.N // 2, dtype=np.complex128)
@@ -200,8 +200,8 @@ class CKKS_x(CKKS):
             e = np.zeros(self.N // 2, dtype=np.complex128)
             for k in range(B // (2 * self.C)):
                 for b in range(self.h):
+                    i = b * B + u * B // (2 * self.C) + k
                     for a in range(self.C):
-                        i = b * B + u * B // (2 * self.C) + k
                         if self.N // self.C * a >= i:
                             e_coeff = a_coeffs[self.N // self.C * a - i]
                         else:
