@@ -154,7 +154,7 @@ class CKKS_x(CKKS):
             print(
                 "Generating and encoding matrices required for SlotToCoeff..."
             )
-        g = min(g, log(cls.C, 2) - 1)
+        g = min(g, log_C_half)
         grouped_F_list = get_grouped_F(cls.C // 2, g, False).copy()
         cls.grouped_poly_F_list = [
             cls.get_poly_matrix(A, is_boot=True) for A in grouped_F_list
