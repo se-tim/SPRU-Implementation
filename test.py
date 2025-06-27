@@ -14,8 +14,8 @@ if input("Enter your own parameters (y / n)? ") == "y":
     g = int(input("Grouping parameter (log_2 of radix) for SlotToCoeff: g = "))
 else:
     N = 2**15
-    C = 2**2
-    L = 9
+    C = 2**4
+    L = 11
     q = 2**28
     p = 2**22
     delta = 2**35
@@ -48,7 +48,7 @@ print()
 # Testing SPRU bootstrapping
 
 print("A randomly generated ciphertext:")
-ct = CKKS_x.get_random_ciphertext(CKKS_x.sk)
+ct = CKKS_x.get_random_ciphertext(CKKS_x.sk, C // 2)
 print(ct)
 print()
 
