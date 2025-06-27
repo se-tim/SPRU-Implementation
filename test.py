@@ -47,20 +47,16 @@ print()
 
 # Testing SPRU bootstrapping
 
-print("Randomly generated vector:")
-m = Poly(
-    [randint(-p, p) if i % (N // C) == 0 else 0 for i in range(N)],
-    N,
-)
-print(CKKS_x.decode(m, C // 2))
-print()
-
-print("Encrypting it:")
-ct = CKKS_x.enc_poly_with_pk(m, CKKS_x.pk)
+print("A randomly generated ciphertext:")
+ct = CKKS_x.get_random_ciphertext(CKKS_x.sk)
 print(ct)
 print()
 
-print("Projecting it down to the lowest level:")
+print("It decrypts to:")
+print(CKKS_x.decode(ct.dec_to_poly(CKKS_x.sk), C // 2))
+print()
+
+print("Projecting the ciphertext down to the lowest level:")
 ct_low = ct % q
 print(ct_low)
 print()
