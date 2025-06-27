@@ -191,6 +191,7 @@ class CKKS_x(CKKS):
         # Coefficient encodings
 
         B = self.N // self.h
+        N_over_C = self.N // self.C
         outer_factor = (self.q0 / (4 * self.delta * np.pi)) ** (1 / self.h)
         inner_factor = 2 * np.pi * 1j / self.q0
         a_coeffs = self.a.coeffs
@@ -202,14 +203,12 @@ class CKKS_x(CKKS):
                 for b in range(self.h):
                     i = b * B + u * B // (2 * self.C) + k
                     for a in range(self.C):
-                        if self.N // self.C * a >= i:
-                            e_coeff = a_coeffs[self.N // self.C * a - i]
+                        if N_over_C * a >= i:
+                            e_coeff = a_coeffs[N_over_C * a - i]
                         else:
-                            e_coeff = -a_coeffs[
-                                self.N + self.N // self.C * a - i
-                            ]
+                            e_coeff = -a_coeffs[self.N + N_over_C * a - i]
                         if i == 0:
-                            e_coeff += b_coeffs[self.N // self.C * a]
+                            e_coeff += b_coeffs[N_over_C * a]
                         e[k * self.h * self.C + b * self.C + a] = int(e_coeff)
             e = np.exp(e * inner_factor) * outer_factor
             e = ext_bit_rev_vector(e, self.C // 2)
