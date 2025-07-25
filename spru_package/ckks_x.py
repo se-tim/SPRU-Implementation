@@ -173,7 +173,9 @@ class CKKS_x(CKKS):
         for poly_matrix in cls.grouped_poly_F_list:
             rotation_indices += cls.get_BSGS_rotation_indices(poly_matrix)
         for i in rotation_indices:
-            cls.get_galois_swk(5**i, sk, cls.moduli_boot[-2], cls.P)
+            cls.get_galois_swk(
+                5 ** (i % cls.n), sk, cls.moduli_boot[-2], cls.P
+            )
 
         if print_messages:
             print("The SPRU bootstrapping configuration is done!")
